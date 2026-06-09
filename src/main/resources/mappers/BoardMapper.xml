@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.human.shop.mapper.BoardMapper">
+                
+    <!-- 게시글 등록 
+    useGeneratedKeys, keyProperty
+    생성된 id를 가져와서 BoardVo,-->
+    <insert id="insertBoard"
+            parameterType="com.human.shop.vo.BoardVO"
+            useGeneratedKeys="true"
+            keyProperty="id">
+
+        INSERT INTO board (writer,title,content,created_at,updated_at
+        )
+        VALUES ( #{writer},#{title},#{content},NOW(),NOW()
+        )
+
+    </insert>
+
+
+    <!-- 게시글 전체 조회 -->
+    <select id="selectBoardList"
+            parameterType="com.human.shop.vo.PageVO"
+            resultType="com.human.shop.vo.BoardVO">
+
+        SELECT
+            id,
+            writer,
+            title,
+            content,
+            view_count,
+            created_at,
+            updated_at,
+            deleted
+        FROM board
+        WHERE deleted = 0
+        ORDER BY id DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id = "getCount"
+        resultType="int">
+        SELECT COUNT(*)
+        FROM board
+        WHERE deleted=0
+    </select>
+
+
+    <!-- 조회수 증가 -->
+    <update id="updateViewCount"
+            parameterType="long">
+
+        UPDATE board
+        SET view_count = view_count + 1
+        WHERE id = #{id}
+
+    </update>
+
+    <!-- 튜플을 삭제하는 delete 컨셉
+       <delete id="deleteById"
+            parameterType="long">
+        delete 
+        from board
+        where id= #{id}  #{id} id는 mapper인자로 전달한 파라미터
+    </delete> -->
+
+    <!-- 삭제 기능인데 튜플 삭제가 아닌 deleted  값을 1로 -->
+    <!-- 자신이 삭제한 글을 목록을 보고, 원하면 되살리기.. 기능연계
+         윈도우의 휴지통같은 느낌
+         문제... 담당자는 알고 있다.. 윤리적인 능력 요구함.
+         비밀발설금지 이런 체크를 하기도 합니다.-->
+    <update id="deleteById"
+        parameterType="long">
+        update board
+        SET 
+            deleted=1,
+            updated_at =NOW()
+        where id=#{id}
+    </update>
+
+    <!-- 글 한개 가져가기-->
+    <select id="getBoardById"
+            parameterType="long"
+            resultType="com.human.shop.vo.BoardVO">
+        select *
+        from board
+        where deleted =0 and id =#{id}
+    </select>
+
+    <!-- 게시글 수정-->
+    <update id="updateById"
+            parameterType="com.human.shop.vo.BoardVO">
+        update board
+        set 
+            title = #{title},
+            content = #{content},
+            updated_at = NOW()
+        where id = #{id}
+    </update>
+
+
+</mapper>

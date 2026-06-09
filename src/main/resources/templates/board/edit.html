@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 수정</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 1000px;
+            margin: 30px auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            height: 300px;
+            resize: none;
+        }
+
+        .file-area {
+            border: 2px dashed #aaa;
+            padding: 40px;
+            text-align: center;
+            background-color: #fafafa;
+        }
+
+        .file-area.dragover {
+            background-color: #e8f0ff;
+            border-color: royalblue;
+        }
+
+        .button-area {
+            margin-top: 30px;
+            text-align: right;
+        }
+
+        .save-btn {
+            padding: 12px 25px;
+            background-color: royalblue;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .add-file-btn {
+            margin-top: 10px;
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+
+        .preview-list {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .preview-item {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div th:replace="layout/header :: headerFragment"></div>
+
+    <div class="container">
+
+        <h2>게시글 수정</h2>
+
+        <!-- 수정은 PUT 또는 POST + hidden id -->
+        <form th:action="@{/boards/update}" method="post" enctype="multipart/form-data">
+
+            <!-- 중요 수정할 아이디를 넘겨야 한다. 이럴때는 다음과 같이 변수를 만들어 넘긴다-->
+            <input type="hidden" name="id" th:value="${board.id}">
+
+            <!-- 작성자 -->
+            <div class="form-group">
+                <label>작성자</label>
+                <input type="text" name="writer" th:value="${board.writer}" readonly>
+            </div>
+
+            <!-- 제목 -->
+            <div class="form-group">
+                <label>제목</label>
+                <input type="text" name="title" th:value="${board.title}">
+            </div>
+
+            <!-- 내용 -->
+            <div class="form-group">
+                <label>글내용</label>
+                <textarea name="content" th:text="${board.content}"></textarea>
+            </div>
+
+            <!-- 기존 첨부파일 -->
+            <!-- <div class="form-group">
+            <label>기존 첨부파일</label>
+
+            <div class="preview-list">
+
+                <div class="preview-item"
+                     th:each="file, stat : ${board.files}">
+
+                    <img th:src="@{${file.url}}">
+
+                    기존 파일 삭제용 -->
+            <!-- <button type="button"
+                            class="remove-btn"
+                            th:onclick="|removeExistingFile(${file.id})|">
+                        x
+                    </button>
+
+                     삭제 대상 hidden 
+                    <input type="hidden" name="deleteFileIds" class="deleteFileInput">
+                </div>
+
+            </div>
+        </div> -->
+
+            <!-- 새 파일 업로드 -->
+            <div class="form-group">
+
+                <label>파일 추가</label>
+
+                <div class="file-area" id="dropZone">
+                    <p>파일을 드래그 하세요</p>
+                    <p>또는</p>
+
+                    <input type="file" id="fileInput" multiple accept="image/*" hidden>
+
+                    <button type="button" onclick="document.getElementById('fileInput').click()">
+                        + 파일 추가
+                    </button>
+                </div>
+
+                <div id="previewList" class="preview-list"></div>
+            </div>
+
+            <div class="button-area">
+                <button type="submit" class="save-btn">수정하기</button>
+            </div>
+
+        </form>
+
+    </div>
+
+    <div th:replace="layout/footer :: footerFragment"></div>
+
+    <script>
+        let selectedFiles = [];
+
+        const fileInput = document.getElementById("fileInput");
+        const dropZone = document.getElementById("dropZone");
+        const previewList = document.getElementById("previewList");
+
+        fileInput.addEventListener("change", e => addFiles(e.target.files));
+
+        dropZone.addEventListener("dragover", e => e.preventDefault());
+
+        dropZone.addEventListener("drop", e => {
+            e.preventDefault();
+            addFiles(e.dataTransfer.files);
+        });
+
+        function addFiles(files) {
+            for (let file of files) {
+                if (!file.type.startsWith("image/")) continue;
+                selectedFiles.push(file);
+            }
+            syncInput();
+            renderPreview();
+        }
+
+        function syncInput() {
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => dataTransfer.items.add(file));
+            fileInput.files = dataTransfer.files;
+        }
+
+        function renderPreview() {
+            previewList.innerHTML = "";
+
+            selectedFiles.forEach((file, index) => {
+                const url = URL.createObjectURL(file);
+
+                const div = document.createElement("div");
+                div.classList.add("preview-item");
+
+                div.innerHTML = `
+                <img src="${url}">
+                <button type="button" class="remove-btn" onclick="removeFile(${index})">x</button>
+            `;
+
+                previewList.appendChild(div);
+            });
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            syncInput();
+            renderPreview();
+        }
+
+        // 기존 파일 삭제 처리
+        function removeExistingFile(fileId) {
+            // UI에서 숨김 처리
+            event.target.closest(".preview-item").style.display = "none";
+
+            // 삭제 ID hidden 추가
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = "deleteFileIds";
+            input.value = fileId;
+
+            document.querySelector("form").appendChild(input);
+        }
+    </script>
+
+</body>
+
+</html>

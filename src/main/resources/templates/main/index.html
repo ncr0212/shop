@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>쇼핑몰 메인</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+        }
+
+        .top-menu {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: #222;
+            color: white;
+        }
+
+        .top-menu a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .menu ul {
+            display: flex;
+            list-style: none;
+            background-color: #444;
+            margin: 0;
+            padding: 15px;
+        }
+
+        .menu li {
+            margin-right: 30px;
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .main-banner {
+            height: 400px;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+        }
+
+        
+    </style>
+
+</head>
+
+<body>
+
+<!-- header 
+ 파일위치가 layout/header
+ 저 파일에서 다음과 같이 지정된
+ <div th:fragment="headerFragment"> 
+ headerFragment를 가져와서 index 화면에 붙여라-->
+<div th:replace="layout/header :: headerFragment"></div>
+
+<!-- 컨트롤러로 부터 받은 message 값 출력-->
+<h1 th:text="${message}"></h1>
+
+<!-- 컨트롤러로 부터 받은 과일의 목록 출력. 주의 : 컨트롤러가 넘긴 것은 배열-->
+<ul>
+    <li th:each="f : ${fruits}" th:text="${f}">
+</ul>
+
+<!-- 메인 배너 -->
+<section class="main-banner">
+    쇼핑몰 메인 화면
+</section>
+
+<!-- footer -->
+<div th:replace="layout/footer :: footerFragment"></div>
+<script>
+</script>
+</body>
+</html>

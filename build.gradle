@@ -1,0 +1,63 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.14'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.human'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+//의존성설정
+//이 프로젝트는 여기 설정된 라이브러리 등을 의존한다.
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	//이 프로젝트는  mariaDB를 의존합니다. 그래서 라이브러리 필요
+	//다음과 같이 적어 주면 라이브러리를 자동으로 다운로드 해 준다.
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+
+	//스프링에서는 무식하게 dao를 만들지 않는다
+	//사용하기 편하게 만들어 놓은 프레임워크가 있다.  
+	//그중 mybatis를 사용한다.
+	//프레임워크 단어가 어렵다면 그냥 패스.. 
+	//dao 가 아닌 mybatis사용해서 데이터 CRUD를 하겠다.
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.4'
+
+	//한줄로 정리하면, 마리아디비랑 mybatis의존성을 설정.. 
+
+	//디펜던시 추가:: 롬복라이브러리
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// 스프링 시큐리티 추가
+	// security 추가
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	// thyleaf에서 스프링 시큐리티에 접근해서 로그인 유무 확인할 수 있는 라이브러리 
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+//이 파일은 빌드라는 의미를 이해 해야 합니다.
+// 빌드라는 단어는 라이브러리관리, 컴파일, 배포, 실행 등의 작업을 포함합니다.
+// 이 단어가 이해 안되면 암기하시고 패스 해야 합니다.
+// 실제로 코드를 작성하는데 빌드라는 단어는 사용하지 않아됩니다
+
+// 즉, 수업에 따라오기 위해서는 빌드 단어 필수 아님..
+// 실력을 높이기 위해서는 일단 수업에 따라 오시고. 단어를 공부

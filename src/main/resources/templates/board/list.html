@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>게시판</title>
+
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/board.css}">
+</head>
+
+<body>
+
+    <!-- header -->
+    <div th:replace="layout/header :: headerFragment"></div>
+
+    <div class="container">
+
+        <div class="top-area">
+
+            <h2>게시판</h2>
+              <!-- 클라이언트 요청 중 <a> location.href 2개 습득
+               이 2개는 모두 get방식입니다. -->
+            <button class="write-btn" onclick="location.href='/boards/write'">
+                글쓰기
+            </button>
+
+        </div>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>제목</th>
+                    <th>작성자</th>
+                    <th>작성일</th>
+                    <th>관리</th>
+                </tr>
+            </thead>
+
+            <tbody>                    
+                <!-- 컨트롤러가 boards 변수로 리스트를 넘겼다.
+                 타임리프가 boards 사이즈만큼 반복해서 tr을 만든다.-->
+                <tr th:each="board : ${boards}"> <!-- boards의 값을 가져와서 
+                    board변수에 저장. board변수는 boardVO 객체의 주소-->
+                    <td th:text="${board.id}"></td> <!-- id는 vo객체 getter-->
+                    <td>
+                        <a th:href="@{/boards/{id}(id=${board.id})}" th:text="${board.title}">
+                    </td>
+                    <td th:text="${board.writer}"></td>
+                    <td th:text="${board.createdAt}"></td>
+                    <td>
+                        <button class="action-btn edit-btn"
+                        th:onclick="|location.href='/boards/edit/${board.id}'|">수정</button>
+                        <button class="action-btn delete-btn"
+                        th:onclick="|deleteBoard(${board.id})|">삭제</button>
+
+                     <!-- 클라이언트에서 흐름은 .. 요청자원  메서드  파라미터
+                      href='boards/delete/${board.id}' 
+                      href='boards/delete?id={id}(id=${board.id})'
+                      <a href= 'boards/delete?id={id}(id=${board.id}'
+
+                      js   fetch  요청, 메서드, 파라미터
+                     -->
+                   
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 페이징 -->
+        <div class="paging">
+
+            <a th:if="${pageVO.prev}" th:href="@{boards(page=${pageVO.startPage-1})}">이전</a>
+            <th:block
+                th:each="num : ${#numbers.sequence(pageVO.startPage, pageVO.endPage)}">
+                <a th:href="@{boards(page=${num})}"
+                    th:text="${num}"
+                    th:classappend="${pageVO.page == num} ? 'active'"></a>
+            </th:block>
+            <a th:if="${pageVO.next}" th:href="@{boards(page=${pageVO.endPage+1})}">다음</a>
+
+        </div>
+
+    </div>
+
+    <div th:replace="layout/footer :: footerFragment"></div>
+
+    <script>
+
+        function deleteBoard(id) {
+            const result = confirm("삭제하시겠습니까?");  //confirm 버튼 y / n
+            if (result) {
+                location.href = "/boards/delete/" + id;
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>

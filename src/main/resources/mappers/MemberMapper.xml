@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.human.shop.mapper.MemberMapper">
+
+    <resultMap id="memberMap" type="com.human.shop.vo.MemberVO">
+        <id property="loginId" column="login_id"/>
+        <result property="name" column="name"/>
+        <result property="password" column="password"/>
+        <result property="address" column="address"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+    </resultMap>
+
+    <!-- 회원가입 -->
+    <insert id="insertMember">
+        INSERT INTO member (
+            login_id,
+            name,
+            password,
+            address,
+            phone,
+            email
+        )
+        VALUES (
+            #{loginId},
+            #{name},
+            #{password},
+            #{address},
+            #{phone},
+            #{email}
+        )
+    </insert>
+
+    <!-- 로그인용 회원 조회 -->
+    <select id="findByLoginId"
+            parameterType="string"
+            resultMap="memberMap"> <!--vo로 안 받고 위에서 지정한 객체로 받는다.-->
+        SELECT
+            login_id,
+            name,
+            password,
+            address,
+            phone,
+            email,
+            role
+        FROM member
+        WHERE login_id = #{loginId}
+    </select>
+
+</mapper>

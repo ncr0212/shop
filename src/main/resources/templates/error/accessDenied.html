@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>접근 권한 없음</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f8fafc;
+            font-family: "Pretendard", sans-serif;
+        }
+
+        .error-container {
+            width: 500px;
+            background: white;
+            text-align: center;
+            padding: 50px;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .error-icon {
+            font-size: 70px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #dc2626;
+            margin-bottom: 15px;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        button {
+            padding: 12px 30px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+
+<div class="error-container">
+    <div class="error-icon">🚫</div>
+
+    <h1>접근 권한이 없습니다</h1>
+
+    <p>
+        현재 계정으로는 해당 페이지에 접근할 수 없습니다.<br>
+        관리자에게 문의해 주세요.
+    </p>
+
+    <button onclick="location.href='/'">
+        메인 페이지로 이동
+    </button>
+</div>
+
+<script>
+    const params = new URLSearchParams(location.search);
+
+    if (params.get("error") === "noPermission") {
+        alert("접근 권한이 없습니다.");
+    }
+</script>
+
+</body>
+</html>

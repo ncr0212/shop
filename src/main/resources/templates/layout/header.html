@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<!-- 위 코드는 스프링 시큐리티의 인증받은 객체에 접근할 수 있다. -->
+<style>
+    
+
+</style>
+<body>
+
+    <div th:fragment="headerFragment">
+        <header>
+
+            <link rel="stylesheet" th:href="@{/css/header.css}">
+
+            <div class="top-menu">
+
+                <h1>
+                    <a th:href="@{/}">My Shop</a>
+                </h1>
+
+                <!-- 로그인한 정보가 없다면 false -->
+                <div sec:authorize="isAnonymous()">
+                    <button type="button" id="loginBtn">로그인</button>
+                    <button type="button" id="joinBtn">회원가입</button>
+                </div>
+
+                <!-- 로그인한 정보가 있다면 true -->
+                <div sec:authorize="isAuthenticated()">
+                    <a th:href="@{/logout}">로그아웃</a>
+                </div>
+
+            </div>
+
+            <nav class="menu">
+                <ul>
+                    <li><a th:href="@{/}">홈</a></li>
+                    <li><a th:href="@{/products/popular}">인기상품</a></li>
+                    <li><a th:href="@{/products}">전체상품</a></li>
+                    <li><a th:href="@{/boards}">게시판</a></li>
+                    <li><a th:href="@{/managers}">관리자전용</a></li>
+                    <!-- method, parameter check-->
+                </ul>
+            </nav>
+
+        </header>
+        <div id="joinModal" class="modal">
+
+            <div class="modal-content">
+
+                <button type="button" id="closeJoinBtn">&times;</button>
+
+                <h2>회원가입</h2>
+
+                <form th:action="@{/members}" method="post">
+
+                    <div>
+                        <input type="text" name="loginId" placeholder="아이디">
+                    </div>
+
+                    <div>
+                        <input type="text" name="name" placeholder="이름">
+                    </div>
+
+                    <div>
+                        <input type="password" name="password" placeholder="비밀번호">
+                    </div>
+
+                    <div>
+                        <input type="text" name="address" placeholder="주소">
+                    </div>
+
+                    <div>
+                        <input type="text" name="phone" placeholder="전화번호">
+                    </div>
+
+                    <div>
+                        <input type="email" name="email" placeholder="이메일">
+                    </div>
+
+                    <button type="submit">회원가입</button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        <div id="loginModal" class="modal">
+
+            <div class="modal-content">
+
+                <button type="button" id="closeLoginBtn">&times;</button>
+
+                <h2>로그인</h2>
+                <!-- 클라이언요청 post방식, 파라미터 있는 경우. 시작
+                 1. form 태그로 감싸 있어야 합니다. 
+                 2. 로그인 버튼을 누르면 submit액션이 일어나고 
+                    th:action 에서 지정된 /login으로 요청하게 됩니다.
+                 3. 이때 메서드는 post입니다.
+                 4. 파라미터는  <input 태그의 name속성이 파라미터 변수입니다.-->
+                <form th:action="@{/login}" method="post">
+                    <div>
+                        <input type="text" name="username" placeholder="아이디">
+                    </div>
+                    <div>
+                        <input type="password" name="password" placeholder="비밀번호">
+                    </div>
+                    <button type="submit">로그인</button>
+                </form>
+                <!-- 클라이언요청 post방식, 파라미터 있는 경우. 끝-->
+
+            </div>
+
+        </div>
+
+
+
+        <script>
+
+            const loginBtn = document.getElementById("loginBtn");
+            const joinBtn = document.getElementById("joinBtn");
+            const closeJoinBtn = document.getElementById("closeJoinBtn");
+            const closeLoginBtn = document.getElementById("closeLoginBtn");
+
+            if (loginBtn) {
+                loginBtn.addEventListener("click", openLogin);
+            }
+
+            if (joinBtn) {
+                joinBtn.addEventListener("click", openJoin);
+            }
+
+            if (closeJoinBtn) {
+                closeJoinBtn.addEventListener("click", closeJoin);
+            }
+
+            if (closeLoginBtn) {
+                closeLoginBtn.addEventListener("click", closeLogin);
+            }
+
+            function openLogin() {
+                document.getElementById("loginModal").style.display = "block";
+            }
+
+            function closeLogin() {
+                document.getElementById("loginModal").style.display = "none";
+            }
+
+            function openJoin() {
+                document.getElementById("joinModal").style.display = "block";
+            }
+
+            function closeJoin() {
+                document.getElementById("joinModal").style.display = "none";
+            }
+
+        </script>
+
+    </div>
+
+</body>
+
+</html>
